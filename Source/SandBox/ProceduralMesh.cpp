@@ -36,9 +36,9 @@ void AProceduralMesh::CreateMesh() {
 	// Calculate Vertices and Triangles from resolution in a Grid pattern
 	for (int i = 0; i <= resolution; i++) {
 		for (int j = 0; j <= resolution; j++) {
-			Vertex.Set(i * scale / float(resolution) - (scale / 2.f), j * scale / float(resolution) - (scale / 2.f), 0.f);
+			Vertex.Set(i * scaleX / float(resolution) - (scaleX / 2.f), j * scaleY / float(resolution) - (scaleY / 2.f), 0.f);
 			Vertices.Add(Vertex);
-			Noise.Add(FMath::FRandRange(0.f, 20.f));
+			Noise.Add(FMath::FRandRange(0.f, NoiseScale));
 
 			if (i < resolution && j < resolution) {
 				Triangles.Add(i * (resolution + 1) + j);
@@ -55,9 +55,9 @@ void AProceduralMesh::CreateMesh() {
 	// Calculate Vertices and Triangles from resolution in a Grid pattern
 	for (int i = 0; i <= resolution; i++) {
 		for (int j = 0; j <= resolution; j++) {
-			Vertex.Set(i * scale / float(resolution) - (scale / 2.f), j * scale / float(resolution) - (scale / 2.f), 0.f);
+			Vertex.Set(i * scaleX / float(resolution) - (scaleX / 2.f), j * scaleY / float(resolution) - (scaleY / 2.f), 0.f);
 			Vertices.Add(Vertex);
-			Noise.Add(FMath::FRandRange(0.f, 20.f));
+			Noise.Add(FMath::FRandRange(0.f, NoiseScale));
 
 			if (i < resolution && j < resolution) {
 				Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
@@ -158,4 +158,22 @@ void AProceduralMesh::UpdateMesh() {
 		// Update the Mesh
 		Mesh->UpdateMeshSection_LinearColor(0, Vertices, TArray<FVector>(), TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>());
 	}
+}
+
+void AProceduralMesh::GeneratePerlinNoise() {
+
+	//TArray<float> NoiseArray;
+	//TArray<FVector2D> Points;
+
+	//FVector2D Point;
+
+	//Point.X = FMath::RandRange(0, resolution);
+	//Point.Y = FMath::RandRange(0, resolution);
+	//Points.Add(Point);
+
+	//for (int i = 0; i < resolution; i++) {
+	//	for (int j = 0; j < resolution; j++) {
+	//		NoiseArray.Add(10.f);
+	//	}
+	//}
 }

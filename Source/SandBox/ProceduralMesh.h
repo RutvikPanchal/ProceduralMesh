@@ -28,12 +28,16 @@ private:
 	// Mesh Object with Triangles and Vertices
 	UProceduralMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, Category = "Mesh")
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
 	int32 resolution = 4;
-	UPROPERTY(EditAnywhere, Category = "Mesh")
-	float scale = 100.f;
-	UPROPERTY(EditAnywhere, Category = "Mesh")
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
 	float radius = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
+	float scaleX = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
+	float scaleY = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
+	float NoiseScale = 0.f;
 
 	float AngleStep;
 	FVector Vertex;
@@ -41,6 +45,8 @@ private:
 	TArray<FVector> Vertices;
 	TArray<int32> Triangles;
 	TArray<float> Noise;
+
+	void GeneratePerlinNoise();
 
 	UFUNCTION(BlueprintCallable, Category = "Mesh")
 	void UpdateMesh();
