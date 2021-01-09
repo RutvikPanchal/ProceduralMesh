@@ -31,112 +31,135 @@ void AProceduralMesh::CreateMesh() {
 	// Clear all Variables
 	ClearArrays();
 
-	AngleStep = (90.f / (resolution - 1)) * PI / 180;
+	switch (shape) {
+	case 0:
+		AngleStep = (90.f / (resolution - 1)) * PI / 180;
 
-	// Calculate Vertices and Triangles from resolution in a Grid pattern
-	for (int i = 0; i <= resolution; i++) {
-		for (int j = 0; j <= resolution; j++) {
-			Vertex.Set(i * scaleX / float(resolution) - (scaleX / 2.f), j * scaleY / float(resolution) - (scaleY / 2.f), 0.f);
-			Vertices.Add(Vertex);
-			Noise.Add(FMath::FRandRange(0.f, NoiseScale));
+		// Calculate Vertices and Triangles from resolution in a Grid pattern
+		for (int i = 0; i <= resolution; i++) {
+			for (int j = 0; j <= resolution; j++) {
+				Vertex.Set(i * scaleX / float(resolution) - (scaleX_div / 2.f), j * scaleY / float(resolution) - (scaleY_div / 2.f), 0.f);
+				Vertices.Add(Vertex);
 
-			if (i < resolution && j < resolution) {
-				Triangles.Add(i * (resolution + 1) + j);
-				Triangles.Add(i * (resolution + 1) + (j + 1));
-				Triangles.Add((i + 1) * (resolution + 1) + j);
+				if (i < resolution && j < resolution) {
+					Triangles.Add(i * (resolution + 1) + j);
+					Triangles.Add(i * (resolution + 1) + (j + 1));
+					Triangles.Add((i + 1) * (resolution + 1) + j);
 
-				Triangles.Add(i * (resolution + 1) + (j + 1));
-				Triangles.Add((i + 1) * (resolution + 1) + (j + 1));
-				Triangles.Add((i + 1) * (resolution + 1) + j);
-			}
-		}
-	}
-
-	// Calculate Vertices and Triangles from resolution in a Grid pattern
-	for (int i = 0; i <= resolution; i++) {
-		for (int j = 0; j <= resolution; j++) {
-			Vertex.Set(i * scaleX / float(resolution) - (scaleX / 2.f), j * scaleY / float(resolution) - (scaleY / 2.f), 0.f);
-			Vertices.Add(Vertex);
-			Noise.Add(FMath::FRandRange(0.f, NoiseScale));
-
-			if (i < resolution && j < resolution) {
-				Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-				Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-				Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
-
-				Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
-				Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-				Triangles.Add((i + 1) * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
-			}
-		}
-	}
-
-	// Calculate Vertices and Triangles from resolution in a Grid pattern and Stitch 2 hemispheres together
-	for (int i = 0; i <= resolution; i++) {
-		for (int j = 0; j <= resolution; j++) {
-			for (int k = 0; k < resolution; k++) {
-				if ((i == k || i == resolution - k) && (j >= k && j <= (resolution - k))) {
-					Vertices[i * (resolution + 1) + j].Z = sin(AngleStep * k) * radius + 1.f;
-					Vertices[i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1))].Z = (sin(AngleStep * k) * -radius) - 1.f;
-
-					if (k == 0 && j < resolution) {
-						if (i == 0) {
-							Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-							Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
-							Triangles.Add(i * (resolution + 1) + j);
-
-							Triangles.Add(i * (resolution + 1) + j);
-							Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
-							Triangles.Add(i * (resolution + 1) + (j + 1));
-						}
-						else {
-							Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-							Triangles.Add(i * (resolution + 1) + j);
-							Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
-
-							Triangles.Add(i * (resolution + 1) + j);
-							Triangles.Add(i * (resolution + 1) + (j + 1));
-							Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
-						}
-					}
-				}
-				if ((j == k || j == resolution - k) && (i >= k && i <= (resolution - k))) {
-					Vertices[i * (resolution + 1) + j].Z = sin(AngleStep * k) * radius + 1.f;
-					Vertices[i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1))].Z = (sin(AngleStep * k) * -radius) - 1.f;
-
-					if (k == 0 && i < resolution) {
-						if (j == 0) {
-							Triangles.Add(i * (resolution + 1) + j);
-							Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-							Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-
-							Triangles.Add((i + 1) * (resolution + 1) + j);
-							Triangles.Add((i + 1) * (resolution + 1) + j +((resolution + 1) * (resolution + 1)));
-							Triangles.Add(i * (resolution + 1) + j);
-						}
-						else {
-							Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-							Triangles.Add(i * (resolution + 1) + j);
-							Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-
-							Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
-							Triangles.Add((i + 1) * (resolution + 1) + j);
-							Triangles.Add(i * (resolution + 1) + j);
-						}
-					}
+					Triangles.Add(i * (resolution + 1) + (j + 1));
+					Triangles.Add((i + 1) * (resolution + 1) + (j + 1));
+					Triangles.Add((i + 1) * (resolution + 1) + j);
 				}
 			}
 		}
-	}
 
-	// Normalize the vectors
-	for (int i = 0; i < Vertices.Num(); i++) {
-		Vertices[i].Normalize();
-		Vertices[i] *= radius;
+		// Calculate Vertices and Triangles from resolution in a Grid pattern
+		for (int i = 0; i <= resolution; i++) {
+			for (int j = 0; j <= resolution; j++) {
+				Vertex.Set(i * scaleX / float(resolution) - (scaleX_div / 2.f), j * scaleY / float(resolution) - (scaleY_div / 2.f), 0.f);
+				Vertices.Add(Vertex);
+
+				if (i < resolution && j < resolution) {
+					Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+					Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+					Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+
+					Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+					Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+					Triangles.Add((i + 1) * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+				}
+			}
+		}
+
+		// Calculate Vertices and Triangles from resolution in a Grid pattern and Stitch 2 hemispheres together
+		for (int i = 0; i <= resolution; i++) {
+			for (int j = 0; j <= resolution; j++) {
+				for (int k = 0; k < resolution; k++) {
+					if ((i == k || i == resolution - k) && (j >= k && j <= (resolution - k))) {
+						Vertices[i * (resolution + 1) + j].Z = sin(AngleStep * k) * shapeScale + 1.f;
+						Vertices[i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1))].Z = (sin(AngleStep * k) * -shapeScale) - 1.f;
+
+						if (k == 0 && j < resolution) {
+							if (i == 0) {
+								Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+								Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+								Triangles.Add(i * (resolution + 1) + j);
+
+								Triangles.Add(i * (resolution + 1) + j);
+								Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+								Triangles.Add(i * (resolution + 1) + (j + 1));
+							}
+							else {
+								Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+								Triangles.Add(i * (resolution + 1) + j);
+								Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+
+								Triangles.Add(i * (resolution + 1) + j);
+								Triangles.Add(i * (resolution + 1) + (j + 1));
+								Triangles.Add(i * (resolution + 1) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+							}
+						}
+					}
+					if ((j == k || j == resolution - k) && (i >= k && i <= (resolution - k))) {
+						Vertices[i * (resolution + 1) + j].Z = sin(AngleStep * k) * shapeScale + 1.f;
+						Vertices[i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1))].Z = (sin(AngleStep * k) * -shapeScale) - 1.f;
+
+						if (k == 0 && i < resolution) {
+							if (j == 0) {
+								Triangles.Add(i * (resolution + 1) + j);
+								Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+								Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+
+								Triangles.Add((i + 1) * (resolution + 1) + j);
+								Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+								Triangles.Add(i * (resolution + 1) + j);
+							}
+							else {
+								Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+								Triangles.Add(i * (resolution + 1) + j);
+								Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+
+								Triangles.Add((i + 1) * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
+								Triangles.Add((i + 1) * (resolution + 1) + j);
+								Triangles.Add(i * (resolution + 1) + j);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Normalize the vectors
+		for (int i = 0; i < Vertices.Num(); i++) {
+			Vertices[i].Normalize();
+			Vertices[i] *= shapeScale;
+		}
+		break;
+
+		case 1:
+			// Calculate Vertices and Triangles from resolution in a Grid pattern
+			for (int i = 0; i <= resolution; i++) {
+				for (int j = 0; j <= resolution; j++) {
+					Vertex.Set(i * scaleX / float(resolution) - (scaleX_div / 2.f), j * scaleY / float(resolution) - (scaleY_div / 2.f), 0.f);
+					Vertices.Add(Vertex);
+
+					if (i < resolution && j < resolution) {
+						Triangles.Add(i * (resolution + 1) + j);
+						Triangles.Add(i * (resolution + 1) + (j + 1));
+						Triangles.Add((i + 1) * (resolution + 1) + j);
+
+						Triangles.Add(i * (resolution + 1) + (j + 1));
+						Triangles.Add((i + 1) * (resolution + 1) + (j + 1));
+						Triangles.Add((i + 1) * (resolution + 1) + j);
+					}
+				}
+			}
+			break;
 	}
 
 	// Create Mesh
 	Mesh->CreateMeshSection_LinearColor(0, Vertices, Triangles, TArray<FVector>(), TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
+	GeneratePerlinNoise();
 }
 
 void AProceduralMesh::ClearArrays()
@@ -144,15 +167,32 @@ void AProceduralMesh::ClearArrays()
 	Vertex.Set(0.f, 0.f, 0.f);
 	Vertices.Empty();
 	Triangles.Empty();
+	Points.Empty();
 	Noise.Empty();
 }
 
 void AProceduralMesh::UpdateMesh() {
 	if (Vertices.Num() != 0) {
 		for (int i = 0; i < Vertices.Num(); i++) {
-			Vertices[i].Normalize();
-			Vertices[i] *= (radius + Noise[i]);
-			//Vertices[i] *= (radius);
+			switch (shape) {
+			case 0:
+				Vertices[i].Normalize();
+				if (Vertices.Num() <= Noise.Num()) {
+					Vertices[i] *= (shapeScale + (Noise[i]));
+				}
+				else {
+					Vertices[i] *= (shapeScale);
+				}
+				break;
+			case 1:
+				if (Vertices.Num() <= Noise.Num()) {
+					Vertices[i] *= shapeScale / 50;
+					Vertices[i].Z += Noise[i];
+				}
+				else {
+					Vertices[i] *= (shapeScale / 50);
+				}
+			}
 		}
 
 		// Update the Mesh
@@ -161,19 +201,30 @@ void AProceduralMesh::UpdateMesh() {
 }
 
 void AProceduralMesh::GeneratePerlinNoise() {
+	FVector2D Point;
 
-	//TArray<float> NoiseArray;
-	//TArray<FVector2D> Points;
+	float distance;
+	float minDistance;
+	float maxDistance = sqrt((resolution * resolution) + (resolution * resolution));
 
-	//FVector2D Point;
+	for (int i = 0; i < NoisePoints; i++) {
+		Point.X = FMath::RandRange(0.f, float(resolution));
+		Point.Y = FMath::RandRange(0.f, float(resolution));
+		Points.Add(Point);
+	}
 
-	//Point.X = FMath::RandRange(0, resolution);
-	//Point.Y = FMath::RandRange(0, resolution);
-	//Points.Add(Point);
-
-	//for (int i = 0; i < resolution; i++) {
-	//	for (int j = 0; j < resolution; j++) {
-	//		NoiseArray.Add(10.f);
-	//	}
-	//}
+	for (int l = 0; l < (Vertices.Num() / ((resolution + 1) * (resolution + 1))); l++) {
+		for (int i = 0; i <= resolution; i++) {
+			for (int j = 0; j <= resolution; j++) {
+				minDistance = maxDistance;
+				for (int k = 0; k < NoisePoints; k++) {
+					distance = sqrt((j - Points[k].X) * (j - Points[k].X) + (i - Points[k].Y) * (i - Points[k].Y));
+					if (distance < minDistance) {
+						minDistance = distance;
+					}
+				}
+				Noise.Add(NoiseScale * (maxDistance - minDistance) - NoiseScale*resolution*sqrt(2));
+			}
+		}
+	}
 }

@@ -28,41 +28,53 @@ private:
 	// Mesh Object with Triangles and Vertices
 	UProceduralMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
+	UPROPERTY(EditAnywhere, Category = "Shape", meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	int32 shape = 0;
+
+	// Mesh Variables
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "2"))
 	int32 resolution = 4;
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
-	float radius = 100.f;
+	float shapeScale = 100.f;
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
 	float scaleX = 100.f;
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
 	float scaleY = 100.f;
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
-	float NoiseScale = 0.f;
+	float scaleX_div = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
+	float scaleY_div = 100.f;
 
 	float AngleStep;
 	FVector Vertex;
 
 	TArray<FVector> Vertices;
 	TArray<int32> Triangles;
+
+	// Noise Variables
 	TArray<float> Noise;
+	UPROPERTY(EditAnywhere, Category = "Noise", meta = (UIMin = "0"))
+	float NoiseScale = 0.f;
+	UPROPERTY(EditAnywhere, Category = "Noise", meta = (UIMin = "0"))
+	int32 NoisePoints = 4;
+	UPROPERTY(VisibleAnywhere, Category = "Noise")
+	TArray<FVector2D> Points;
 
 	void GeneratePerlinNoise();
 
+	// Mesh Functions
 	UFUNCTION(BlueprintCallable, Category = "Mesh")
 	void UpdateMesh();
-
 	UFUNCTION(BlueprintCallable, Category = "Mesh")
 	void CreateMesh();
-
 	UFUNCTION(BlueprintCallable, Category = "Mesh")
 	void ClearArrays();
 
+	// Tick Variables
 	UPROPERTY(VisibleAnywhere, Category = "Tick")
 	float TickCounter = 0.f;
-
 	UPROPERTY(EditAnywhere, Category = "Tick")
 	float TickIterator = 0.1f;
-
 	UPROPERTY(EditAnywhere, Category = "Tick")
 	float TickRange = 180.f;
 public:	
