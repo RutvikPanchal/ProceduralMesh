@@ -57,7 +57,6 @@ private:
 	float NoiseScale = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Noise", meta = (UIMin = "0"))
 	int32 NoisePoints = 4;
-	UPROPERTY(VisibleAnywhere, Category = "Noise")
 	TArray<FVector2D> Points;
 
 	void GeneratePerlinNoise();
