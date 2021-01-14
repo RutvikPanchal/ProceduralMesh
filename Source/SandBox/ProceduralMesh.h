@@ -28,7 +28,7 @@ private:
 	// Mesh Object with Triangles and Vertices
 	UProceduralMeshComponent* Mesh;
 
-	UPROPERTY(EditAnywhere, Category = "Shape", meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	UPROPERTY(EditAnywhere, Category = "Shape", meta = (ClampMin = "0", ClampMax = "2", UIMin = "0", UIMax = "2"))
 	int32 shape = 0;
 
 	// Mesh Variables
@@ -48,7 +48,9 @@ private:
 	float AngleStep;
 	FVector Vertex;
 
+	//UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	TArray<FVector> Vertices;
+	//UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	TArray<int32> Triangles;
 
 	// Noise Variables
@@ -57,6 +59,8 @@ private:
 	float NoiseScale = 0.f;
 	UPROPERTY(EditAnywhere, Category = "Noise", meta = (UIMin = "0"))
 	int32 NoisePoints = 4;
+	UPROPERTY(EditAnywhere, Category = "Noise", meta = (UIMin = "0"))
+	int32 Seed = 0;
 	TArray<FVector2D> Points;
 
 	void GeneratePerlinNoise();

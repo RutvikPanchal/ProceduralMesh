@@ -155,6 +155,19 @@ void AProceduralMesh::CreateMesh() {
 				}
 			}
 			break;
+
+	case 2:
+		// Calculate Vertices and Triangles from resolution in a Grid pattern
+		for (int i = 0; i <= resolution; i++) {
+			for (int j = 0; j <= resolution; j++) {
+				Vertex.Set(FMath::RandRange(-50.f, 50.f), FMath::RandRange(-50.f, 50.f), 0.f);
+				Vertices.Add(Vertex);
+			}
+		}
+
+		break;
+	default:
+		break;
 	}
 
 	// Create Mesh
@@ -186,12 +199,15 @@ void AProceduralMesh::UpdateMesh() {
 				break;
 			case 1:
 				if (Vertices.Num() <= Noise.Num()) {
-					Vertices[i] *= shapeScale / 50;
-					Vertices[i].Z += Noise[i];
+					Vertices[i] *= shapeScale / 100;
+					Vertices[i].Z -= Noise[i];
 				}
 				else {
 					Vertices[i] *= (shapeScale / 50);
 				}
+			default:
+				Vertices[i] *= (shapeScale / 50);
+				break;
 			}
 		}
 
@@ -207,9 +223,12 @@ void AProceduralMesh::GeneratePerlinNoise() {
 	float minDistance;
 	float maxDistance = sqrt((resolution * resolution) + (resolution * resolution));
 
+	FRandomStream* Seeder = new FRandomStream(Seed);
+
+	// Noise Points Generation and Positioning
 	for (int i = 0; i < NoisePoints; i++) {
-		Point.X = FMath::RandRange(0.f, float(resolution));
-		Point.Y = FMath::RandRange(0.f, float(resolution));
+		Point.X = Seeder->FRand() * resolution;
+		Point.Y = Seeder->FRand() * resolution;
 		Points.Add(Point);
 	}
 
@@ -223,8 +242,10 @@ void AProceduralMesh::GeneratePerlinNoise() {
 						minDistance = distance;
 					}
 				}
-				Noise.Add(NoiseScale * (maxDistance - minDistance) - NoiseScale*resolution*sqrt(2));
+				Noise.Add(FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, NoiseScale), minDistance));
 			}
 		}
 	}
+
+	delete Seeder;
 }
