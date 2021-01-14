@@ -13,6 +13,7 @@ AProceduralMesh::AProceduralMesh()
 void AProceduralMesh::BeginPlay()
 {
 	Super::BeginPlay();
+	Mesh->SetMaterial(0, Material);
 }
 
 // Called every frame
@@ -40,6 +41,7 @@ void AProceduralMesh::CreateMesh() {
 			for (int j = 0; j <= resolution; j++) {
 				Vertex.Set(i * scaleX / float(resolution) - (scaleX_div / 2.f), j * scaleY / float(resolution) - (scaleY_div / 2.f), 0.f);
 				Vertices.Add(Vertex);
+				VertexColors.Add(FLinearColor(FMath::FRandRange(0.f, 1.f), FMath::FRandRange(0.f, 1.f), FMath::FRandRange(0.f, 1.f)));
 
 				if (i < resolution && j < resolution) {
 					Triangles.Add(i * (resolution + 1) + j);
@@ -58,6 +60,7 @@ void AProceduralMesh::CreateMesh() {
 			for (int j = 0; j <= resolution; j++) {
 				Vertex.Set(i * scaleX / float(resolution) - (scaleX_div / 2.f), j * scaleY / float(resolution) - (scaleY_div / 2.f), 0.f);
 				Vertices.Add(Vertex);
+				VertexColors.Add(FLinearColor(FMath::FRandRange(0.f, 1.f), FMath::FRandRange(0.f, 1.f), FMath::FRandRange(0.f, 1.f)));
 
 				if (i < resolution && j < resolution) {
 					Triangles.Add(i * (resolution + 1) + j + ((resolution + 1) * (resolution + 1)));
@@ -142,6 +145,7 @@ void AProceduralMesh::CreateMesh() {
 				for (int j = 0; j <= resolution; j++) {
 					Vertex.Set(i * scaleX / float(resolution) - (scaleX_div / 2.f), j * scaleY / float(resolution) - (scaleY_div / 2.f), 0.f);
 					Vertices.Add(Vertex);
+					VertexColors.Add(FLinearColor(FMath::FRandRange(0.f, 1.f), FMath::FRandRange(0.f, 1.f), FMath::FRandRange(0.f, 1.f)));
 
 					if (i < resolution && j < resolution) {
 						Triangles.Add(i * (resolution + 1) + j);
@@ -162,6 +166,7 @@ void AProceduralMesh::CreateMesh() {
 			for (int j = 0; j <= resolution; j++) {
 				Vertex.Set(FMath::RandRange(-50.f, 50.f), FMath::RandRange(-50.f, 50.f), 0.f);
 				Vertices.Add(Vertex);
+				VertexColors.Add(FLinearColor(FMath::FRandRange(0.f, 1.f), FMath::FRandRange(0.f, 1.f), FMath::FRandRange(0.f, 1.f)));
 			}
 		}
 
@@ -171,7 +176,7 @@ void AProceduralMesh::CreateMesh() {
 	}
 
 	// Create Mesh
-	Mesh->CreateMeshSection_LinearColor(0, Vertices, Triangles, TArray<FVector>(), TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>(), true);
+	Mesh->CreateMeshSection_LinearColor(0, Vertices, Triangles, TArray<FVector>(), TArray<FVector2D>(), VertexColors, TArray<FProcMeshTangent>(), true);
 	GeneratePerlinNoise();
 }
 
@@ -180,6 +185,7 @@ void AProceduralMesh::ClearArrays()
 	Vertex.Set(0.f, 0.f, 0.f);
 	Vertices.Empty();
 	Triangles.Empty();
+	VertexColors.Empty();
 	Points.Empty();
 	Noise.Empty();
 }
@@ -212,7 +218,7 @@ void AProceduralMesh::UpdateMesh() {
 		}
 
 		// Update the Mesh
-		Mesh->UpdateMeshSection_LinearColor(0, Vertices, TArray<FVector>(), TArray<FVector2D>(), TArray<FLinearColor>(), TArray<FProcMeshTangent>());
+		Mesh->UpdateMeshSection_LinearColor(0, Vertices, TArray<FVector>(), TArray<FVector2D>(), VertexColors, TArray<FProcMeshTangent>());
 	}
 }
 

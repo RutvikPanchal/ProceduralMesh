@@ -32,6 +32,8 @@ private:
 	int32 shape = 0;
 
 	// Mesh Variables
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
+	UMaterial* Material;
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "2"))
 	int32 resolution = 4;
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
@@ -52,6 +54,8 @@ private:
 	TArray<FVector> Vertices;
 	//UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	TArray<int32> Triangles;
+	//UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	TArray<FLinearColor> VertexColors;
 
 	// Noise Variables
 	TArray<float> Noise;
