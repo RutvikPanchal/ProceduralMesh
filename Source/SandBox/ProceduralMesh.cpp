@@ -191,7 +191,7 @@ void AProceduralMesh::UpdateMesh() {
 			case 0:
 				Vertices[i].Normalize();
 				if (Vertices.Num() <= Noise.Num()) {
-					Vertices[i] *= (shapeScale + (Noise[i]));
+					Vertices[i] *= (shapeScale - (Noise[i]));
 				}
 				else {
 					Vertices[i] *= (shapeScale);
@@ -232,6 +232,7 @@ void AProceduralMesh::GeneratePerlinNoise() {
 		Points.Add(Point);
 	}
 
+	// Noise Array Generation
 	for (int l = 0; l < (Vertices.Num() / ((resolution + 1) * (resolution + 1))); l++) {
 		for (int i = 0; i <= resolution; i++) {
 			for (int j = 0; j <= resolution; j++) {
@@ -243,6 +244,58 @@ void AProceduralMesh::GeneratePerlinNoise() {
 					}
 				}
 				Noise.Add(FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, NoiseScale), minDistance));
+			}
+		}
+	}
+
+	Points.Empty();
+	// Noise Points Generation and Positioning
+	for (int i = 0; i < NoisePoints*3; i++) {
+		Point.X = Seeder->FRand() * resolution;
+		Point.Y = Seeder->FRand() * resolution;
+		Points.Add(Point);
+	}
+
+	maxDistance = sqrt((resolution * resolution) + (resolution * resolution));
+
+	// Noise Array Generation
+	for (int l = 0; l < (Vertices.Num() / ((resolution + 1) * (resolution + 1))); l++) {
+		for (int i = 0; i <= resolution; i++) {
+			for (int j = 0; j <= resolution; j++) {
+				minDistance = maxDistance;
+				for (int k = 0; k < NoisePoints*3; k++) {
+					distance = sqrt((j - Points[k].X) * (j - Points[k].X) + (i - Points[k].Y) * (i - Points[k].Y));
+					if (distance < minDistance) {
+						minDistance = distance;
+					}
+				}
+				Noise[i * (resolution + 1) + j] += NoiseAdditionFactor_01 * (FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, NoiseScale), minDistance));
+			}
+		}
+	}
+
+	Points.Empty();
+	// Noise Points Generation and Positioning
+	for (int i = 0; i < NoisePoints * 10; i++) {
+		Point.X = Seeder->FRand() * resolution;
+		Point.Y = Seeder->FRand() * resolution;
+		Points.Add(Point);
+	}
+
+	maxDistance = sqrt((resolution * resolution) + (resolution * resolution));
+
+	// Noise Array Generation
+	for (int l = 0; l < (Vertices.Num() / ((resolution + 1) * (resolution + 1))); l++) {
+		for (int i = 0; i <= resolution; i++) {
+			for (int j = 0; j <= resolution; j++) {
+				minDistance = maxDistance;
+				for (int k = 0; k < NoisePoints * 10; k++) {
+					distance = sqrt((j - Points[k].X) * (j - Points[k].X) + (i - Points[k].Y) * (i - Points[k].Y));
+					if (distance < minDistance) {
+						minDistance = distance;
+					}
+				}
+				Noise[i * (resolution + 1) + j] += NoiseAdditionFactor_02 * (FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, NoiseScale), minDistance));
 			}
 		}
 	}

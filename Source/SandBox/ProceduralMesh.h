@@ -61,6 +61,10 @@ private:
 	int32 NoisePoints = 4;
 	UPROPERTY(EditAnywhere, Category = "Noise", meta = (UIMin = "0"))
 	int32 Seed = 0;
+	UPROPERTY(EditAnywhere, Category = "Noise", meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float NoiseAdditionFactor_01 = 0;
+	UPROPERTY(EditAnywhere, Category = "Noise", meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float NoiseAdditionFactor_02 = 0;
 	TArray<FVector2D> Points;
 
 	void GeneratePerlinNoise();
