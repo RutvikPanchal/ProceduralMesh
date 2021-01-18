@@ -46,6 +46,12 @@ private:
 	float scaleX_div = 100.f;
 	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
 	float scaleY_div = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Mesh")
+	int32 Subdivision_Position_X = 0;
+	UPROPERTY(EditAnywhere, Category = "Mesh")
+	int32 Subdivision_Position_Y = 0;
+	UPROPERTY(EditAnywhere, Category = "Mesh", meta = (UIMin = "0"))
+	int32 Subdivision_Position_Lvl = 1;
 
 	float AngleStep;
 	FVector Vertex;
@@ -66,6 +72,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Noise", meta = (UIMin = "0"))
 	int32 Seed = 0;
 	UPROPERTY(EditAnywhere, Category = "Noise", meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
+	float NoiseAdditionFactor_00 = 0;
+	UPROPERTY(EditAnywhere, Category = "Noise", meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	float NoiseAdditionFactor_01 = 0;
 	UPROPERTY(EditAnywhere, Category = "Noise", meta = (ClampMin = "0", ClampMax = "1", UIMin = "0", UIMax = "1"))
 	float NoiseAdditionFactor_02 = 0;
@@ -74,6 +82,10 @@ private:
 	void GeneratePerlinNoise();
 
 	// Mesh Functions
+	UFUNCTION(BlueprintCallable, Category = "Mesh")
+	void DeleteTris(int32 X, int32 Y);
+	UFUNCTION(BlueprintCallable, Category = "Mesh")
+	void AddSubDPoints(int32 X, int32 Y, int32 SubD);
 	UFUNCTION(BlueprintCallable, Category = "Mesh")
 	void UpdateMesh();
 	UFUNCTION(BlueprintCallable, Category = "Mesh")

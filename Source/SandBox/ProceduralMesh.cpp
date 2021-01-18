@@ -74,7 +74,7 @@ void AProceduralMesh::CreateMesh() {
 			}
 		}
 
-		// Calculate Vertices and Triangles from resolution in a Grid pattern and Stitch 2 hemispheres together
+		// Calculate Vertices's Z value from Anglestep and Triangles from resolution in a Grid pattern and Stitch 2 hemispheres together
 		for (int i = 0; i <= resolution; i++) {
 			for (int j = 0; j <= resolution; j++) {
 				for (int k = 0; k < resolution; k++) {
@@ -131,12 +131,6 @@ void AProceduralMesh::CreateMesh() {
 				}
 			}
 		}
-
-		// Normalize the vectors
-		for (int i = 0; i < Vertices.Num(); i++) {
-			Vertices[i].Normalize();
-			Vertices[i] *= shapeScale;
-		}
 		break;
 
 		case 1:
@@ -158,6 +152,7 @@ void AProceduralMesh::CreateMesh() {
 					}
 				}
 			}
+			DeleteTris(Subdivision_Position_X, Subdivision_Position_Y);
 			break;
 
 	case 2:
@@ -183,11 +178,11 @@ void AProceduralMesh::CreateMesh() {
 void AProceduralMesh::ClearArrays()
 {
 	Vertex.Set(0.f, 0.f, 0.f);
+	Noise.Empty();
+	Points.Empty();
 	Vertices.Empty();
 	Triangles.Empty();
 	VertexColors.Empty();
-	Points.Empty();
-	Noise.Empty();
 }
 
 void AProceduralMesh::UpdateMesh() {
@@ -205,12 +200,13 @@ void AProceduralMesh::UpdateMesh() {
 				break;
 			case 1:
 				if (Vertices.Num() <= Noise.Num()) {
-					Vertices[i] *= shapeScale / 100;
+					Vertices[i] *= (shapeScale / 50);
 					Vertices[i].Z -= Noise[i];
 				}
 				else {
 					Vertices[i] *= (shapeScale / 50);
 				}
+				break;
 			default:
 				Vertices[i] *= (shapeScale / 50);
 				break;
@@ -249,9 +245,14 @@ void AProceduralMesh::GeneratePerlinNoise() {
 						minDistance = distance;
 					}
 				}
-				Noise.Add(FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, NoiseScale), minDistance));
+				float NoiseVertexVal = FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, 0.2f), minDistance);
+				VertexColors[(i * (resolution + 1) + j)] = NoiseAdditionFactor_00 * FLinearColor(NoiseVertexVal, NoiseVertexVal, NoiseVertexVal);
+				Noise.Add(NoiseAdditionFactor_00 * FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, NoiseScale), minDistance));
 			}
 		}
+	}
+	for (int i = resolution * resolution; i < Vertices.Num(); i++) {
+
 	}
 
 	Points.Empty();
@@ -275,6 +276,8 @@ void AProceduralMesh::GeneratePerlinNoise() {
 						minDistance = distance;
 					}
 				}
+				float NoiseVertexVal = FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, 0.2f), minDistance);
+				VertexColors[(i * (resolution + 1) + j)] += NoiseAdditionFactor_01 * FLinearColor(NoiseVertexVal, NoiseVertexVal, NoiseVertexVal);
 				Noise[i * (resolution + 1) + j] += NoiseAdditionFactor_01 * (FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, NoiseScale), minDistance));
 			}
 		}
@@ -301,10 +304,47 @@ void AProceduralMesh::GeneratePerlinNoise() {
 						minDistance = distance;
 					}
 				}
+				float NoiseVertexVal = FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, 0.2f), minDistance);
+				VertexColors[(i * (resolution + 1) + j)] += NoiseAdditionFactor_02 * FLinearColor(NoiseVertexVal, NoiseVertexVal, NoiseVertexVal);
 				Noise[i * (resolution + 1) + j] += NoiseAdditionFactor_02 * (FMath::GetMappedRangeValueClamped(FVector2D(0.f, maxDistance), FVector2D(0.f, NoiseScale), minDistance));
 			}
 		}
 	}
 
 	delete Seeder;
+}
+
+void AProceduralMesh::DeleteTris(int32 X, int32 Y) {
+	if (X < resolution && Y < resolution && X >= 0 && Y >= 0) {
+		Triangles.RemoveAt((X * (resolution) + Y) * 6, 6, true);
+		AddSubDPoints(X, Y, Subdivision_Position_Lvl);
+	}
+}
+
+void AProceduralMesh::AddSubDPoints(int32 X, int32 Y, int32 SubD)
+{
+	for (int i = 0; i <= SubD + 1; i++) {
+		for (int j = 0; j <= SubD + 1; j++) {
+			//if (i > 0 && i < SubD + 1) {
+				Vertex.Set((X + (i / float(SubD + 1))) * scaleX / float(resolution) - (scaleX_div / 2.f), (Y + (j / float(SubD + 1))) * scaleY / float(resolution) - (scaleY_div / 2.f), 0.f);
+				Vertices.Add(Vertex);
+
+				if (i < SubD + 1 && j < SubD + 1) {
+					Triangles.Add(i * (SubD + 2) + j + ((resolution + 1) * (resolution + 1)));
+					Triangles.Add(i * (SubD + 2) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+					Triangles.Add((i + 1) * (SubD + 2) + j + ((resolution + 1) * (resolution + 1)));
+
+					Triangles.Add(i * (SubD + 2) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+					Triangles.Add((i + 1) * (SubD + 2) + (j + 1) + ((resolution + 1) * (resolution + 1)));
+					Triangles.Add((i + 1) * (SubD + 2) + j + ((resolution + 1) * (resolution + 1)));
+				}
+			//}
+			//else {
+				//if (j > 0 && j < SubD + 1) {
+					//Vertex.Set((X + (i / float(SubD + 1))) * scaleX / float(resolution) - (scaleX_div / 2.f), (Y + (j / float(SubD + 1))) * scaleY / float(resolution) - (scaleY_div / 2.f), 0.f);
+					//Vertices.Add(Vertex);
+				//}
+			//}
+		}
+	}
 }
